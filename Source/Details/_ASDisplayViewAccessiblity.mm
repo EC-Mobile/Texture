@@ -308,14 +308,14 @@ static void CollectAccessibilityElements(ASDisplayNode *node, NSMutableArray *el
 
 #pragma mark - UIAccessibility
 
-- (void)setAccessibilityElements:(nullable NSArray *)accessibilityElements
+- (void)setAccessibilityElements:(NSArray *)accessibilityElements
 {
   // this is a no-op. You should not be setting accessibilityElements directly on _ASDisplayView.
   // if you wish to set accessibilityElements, do so in your node. UIKit will call _ASDisplayView's
   // accessibilityElements which will in turn ask its node for its elements.
 }
 
-- (nullable NSArray *)accessibilityElements
+- (NSArray *)accessibilityElements
 {
   ASDisplayNodeAssertMainThread();
 
@@ -336,7 +336,7 @@ static void CollectAccessibilityElements(ASDisplayNode *node, NSMutableArray *el
 
 @implementation ASDisplayNode (AccessibilityInternal)
 
-- (nullable NSArray *)accessibilityElements
+- (NSArray *)accessibilityElements
 {
   // NSObject implements the informal accessibility protocol. This means that all ASDisplayNodes already have an accessibilityElements
   // property. If an ASDisplayNode subclass has explicitly set the property, let's use that instead of traversing the node tree to try
@@ -348,14 +348,12 @@ static void CollectAccessibilityElements(ASDisplayNode *node, NSMutableArray *el
   
   if (!self.isNodeLoaded) {
     ASDisplayNodeFailAssert(@"Cannot access accessibilityElements since node is not loaded");
-    return nil;
+    return @[];
   }
   NSMutableArray *accessibilityElements = [[NSMutableArray alloc] init];
   CollectAccessibilityElements(self, accessibilityElements);
   SortAccessibilityElements(accessibilityElements);
-  // If we did not find any accessibility elements, return nil instead of empty array. This allows a WKWebView within the node
-  // to participate in accessibility.
-  return accessibilityElements.count == 0 ? nil : accessibilityElements;
+  return accessibilityElements;
 }
 
 @end
